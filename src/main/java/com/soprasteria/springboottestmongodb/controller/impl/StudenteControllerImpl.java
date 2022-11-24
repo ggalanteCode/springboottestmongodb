@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.soprasteria.springboottestmongodb.controller.StudenteController;
 import com.soprasteria.springboottestmongodb.exceptions.StudenteException;
 import com.soprasteria.springboottestmongodb.model.Studente;
+import com.soprasteria.springboottestmongodb.model.StudenteSearchParam;
 import com.soprasteria.springboottestmongodb.service.StudenteService;
 
 @RestController
 @RequestMapping("/mongodb/studenti")
 public class StudenteControllerImpl implements StudenteController {
-	
+
 	@Autowired
 	private StudenteService studenteService;
 
@@ -61,7 +62,8 @@ public class StudenteControllerImpl implements StudenteController {
 		// TODO Auto-generated method stub
 		try {
 			studenteService.updateStudente(studente);
-			return new ResponseEntity<Object>("studente con id: " + studente.getId() + " aggiornato con successo!", HttpStatus.OK);
+			return new ResponseEntity<Object>("studente con id: " + studente.getId() + " aggiornato con successo!",
+					HttpStatus.OK);
 		} catch (StudenteException e) {
 			// TODO Auto-generated catch block
 			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -79,6 +81,55 @@ public class StudenteControllerImpl implements StudenteController {
 			// TODO Auto-generated catch block
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
 		}
+	}
+
+	// SEARCH PARAMETRIZZATE
+
+	@Override
+	@GetMapping("/studentiWithMultipleParams")
+	public ResponseEntity<Object> getStudentiWith(@RequestBody StudenteSearchParam param) {
+		// TODO Auto-generated method stub
+		try {
+			return new ResponseEntity<Object>(studenteService.getStudentiWith(param), HttpStatus.OK);
+		} catch (StudenteException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@Override
+	@GetMapping("/studentiWith/{sottoStringa}")
+	public ResponseEntity<Object> getStudentiWith(@PathVariable(value = "sottoStringa") String sottoStringa) {
+		// TODO Auto-generated method stub
+		try {
+			return new ResponseEntity<Object>(studenteService.getStudentiWith(sottoStringa), HttpStatus.OK);
+		} catch (StudenteException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
+	}
+
+	// SEARCH CON PAGINAZIONE
+
+	@Override
+	@PostMapping("/allStudentiPag")
+	public ResponseEntity<Object> getAllStudentiPag() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@PostMapping("/studentiWithMultipleParamsPag")
+	public ResponseEntity<Object> getStudentiWithPag(StudenteSearchParam param) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	@PostMapping("/studentiWithPag/{sottoStringa}")
+	public ResponseEntity<Object> getStudentiWithPag(String sottoStringa) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.soprasteria.springboottestmongodb.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.soprasteria.springboottestmongodb.dao.StudenteDAO;
 import com.soprasteria.springboottestmongodb.exceptions.StudenteException;
 import com.soprasteria.springboottestmongodb.exceptions.StudenteNotFoundException;
 import com.soprasteria.springboottestmongodb.model.Studente;
+import com.soprasteria.springboottestmongodb.model.StudenteSearchParam;
 
 @Repository
 public class StudenteDAOImpl implements StudenteDAO {
@@ -59,6 +61,64 @@ public class StudenteDAOImpl implements StudenteDAO {
 		} else {
 			throw new StudenteNotFoundException(studenteNotFoundMessage);
 		}
+	}
+
+	//OR
+	@Override
+	public List<Studente> findStudentiWith(String sottoStringa) throws StudenteException {
+		// TODO Auto-generated method stub
+		
+		//I PARAMETRI LI USO TUTTI
+		Criteria searchCriteria = new Criteria();
+		Criteria nomeCriteria = Criteria.where("nome").regex(".*" + sottoStringa + ".*", "i");
+		Criteria cognomeCriteria = Criteria.where("cognome").regex(".*" + sottoStringa + ".*", "i");
+		Criteria corsoCriteria = Criteria.where("listaCorsi").regex(".*" + sottoStringa + ".*", "i");
+		searchCriteria.orOperator(nomeCriteria, cognomeCriteria, corsoCriteria);
+		
+		//FACCIO LA RICERCA
+		List<Studente> studenti = null;
+		if(searchCriteria != null) {
+			Query query = new Query(searchCriteria);
+			studenti = mongoTemplate.find(query, Studente.class);
+		}
+		return studenti;
+	}
+	
+	//AND
+	@Override
+	public List<Studente> findStudentiWith(StudenteSearchParam param) {
+		// TODO Auto-generated method stub
+		
+		//QUALI PARAMETRI SCELGO DI USARE?
+		String nome = param.getNome();
+		String cognome = param.getCognome();
+		String corso = param.getCorso();
+		Criteria nomeCriteria = null;
+		Criteria cognomeCriteria = null;
+		Criteria corsoCriteria = null;
+		Criteria searchCriteria = new Criteria();
+		List<Criteria> criterias = new ArrayList<Criteria>();
+		if(nome != null) {
+			nomeCriteria = Criteria.where("nome").regex(".*" + nome + ".*", "i");
+			criterias.add(nomeCriteria);
+		}
+		if(cognome != null) {
+			cognomeCriteria = Criteria.where("cognome").regex(".*" + cognome + ".*", "i");
+			criterias.add(cognomeCriteria);
+		}
+		if(corso != null) {
+			corsoCriteria = Criteria.where("listaCorsi").regex(".*" + corso + ".*", "i");
+			criterias.add(corsoCriteria);
+		}
+		searchCriteria.andOperator(criterias);
+		
+		//FACCIO LA RICERCA
+		List<Studente> studenti = null;
+		if(searchCriteria != null) {
+			Query query = new Query(searchCriteria);
+			studenti = mongoTemplate.find(query, Studente.class);
+		}
+		return studenti;
 	}
 
 }

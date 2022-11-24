@@ -10,6 +10,7 @@ import com.soprasteria.springboottestmongodb.exceptions.StudenteEmptyListExcepti
 import com.soprasteria.springboottestmongodb.exceptions.StudenteException;
 import com.soprasteria.springboottestmongodb.exceptions.StudenteNotFoundException;
 import com.soprasteria.springboottestmongodb.model.Studente;
+import com.soprasteria.springboottestmongodb.model.StudenteSearchParam;
 import com.soprasteria.springboottestmongodb.service.StudenteService;
 
 @Service
@@ -61,6 +62,26 @@ public class StudenteServiceImpl implements StudenteService {
 	public void deleteStudente(String id) throws StudenteException {
 		// TODO Auto-generated method stub
 		studenteDAO.deleteStudente(id);
+	}
+	
+	//AND
+	@Override
+	public List<Studente> getStudentiWith(StudenteSearchParam param) throws StudenteException {
+		// TODO Auto-generated method stub
+		return studenteDAO.findStudentiWith(param);
+	}
+
+	//OR
+	@Override
+	public List<Studente> getStudentiWith(String sottoStringa) throws StudenteException {
+		// TODO Auto-generated method stub
+		return studenteDAO.findStudentiWith(sottoStringa);
+	}
+
+	@Override
+	public List<Studente> getAllStudentiPagination() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
