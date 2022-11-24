@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.soprasteria.springboottestmongodb.controller.StudenteController;
 import com.soprasteria.springboottestmongodb.exceptions.StudenteException;
 import com.soprasteria.springboottestmongodb.model.Studente;
+import com.soprasteria.springboottestmongodb.model.StudentePaginationSearchParam;
+import com.soprasteria.springboottestmongodb.model.StudentePaginationSearchParam2;
+import com.soprasteria.springboottestmongodb.model.StudentePaginationSearchParam3;
 import com.soprasteria.springboottestmongodb.model.StudenteSearchParam;
 import com.soprasteria.springboottestmongodb.service.StudenteService;
 
@@ -113,23 +116,38 @@ public class StudenteControllerImpl implements StudenteController {
 
 	@Override
 	@PostMapping("/allStudentiPag")
-	public ResponseEntity<Object> getAllStudentiPag() {
+	public ResponseEntity<Object> getAllStudentiPag(@RequestBody StudentePaginationSearchParam3 pagParam) {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new ResponseEntity<Object>(studenteService.getAllStudentiPagination(pagParam), HttpStatus.OK);
+		} catch (StudenteException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@Override
 	@PostMapping("/studentiWithMultipleParamsPag")
-	public ResponseEntity<Object> getStudentiWithPag(StudenteSearchParam param) {
+	public ResponseEntity<Object> getStudentiWithPag(@RequestBody StudentePaginationSearchParam pagParam) {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new ResponseEntity<Object>(studenteService.getStudentiWithPagination(pagParam), HttpStatus.OK);
+		} catch (StudenteException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@Override
 	@PostMapping("/studentiWithPag/{sottoStringa}")
-	public ResponseEntity<Object> getStudentiWithPag(String sottoStringa) {
+	public ResponseEntity<Object> getStudentiWithPag(@RequestBody StudentePaginationSearchParam2 pagParam) {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			return new ResponseEntity<Object>(studenteService.getStudentiWithPagination(pagParam), HttpStatus.OK);
+		} catch (StudenteException e) {
+			// TODO Auto-generated catch block
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 	}
 
 }
