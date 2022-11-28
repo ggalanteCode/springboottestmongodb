@@ -77,11 +77,7 @@ public class StudenteDAOImpl implements StudenteDAO {
 		// TODO Auto-generated method stub
 		
 		//I PARAMETRI LI USO TUTTI
-		Criteria searchCriteria = new Criteria();
-		Criteria nomeCriteria = Criteria.where("nome").regex(".*" + sottoStringa + ".*", "i");
-		Criteria cognomeCriteria = Criteria.where("cognome").regex(".*" + sottoStringa + ".*", "i");
-		Criteria corsoCriteria = Criteria.where("listaCorsi").regex(".*" + sottoStringa + ".*", "i");
-		searchCriteria.orOperator(nomeCriteria, cognomeCriteria, corsoCriteria);
+		Criteria searchCriteria = orFilter(sottoStringa);
 		
 		//FACCIO LA RICERCA
 		List<Studente> studenti = null;
@@ -98,27 +94,7 @@ public class StudenteDAOImpl implements StudenteDAO {
 		// TODO Auto-generated method stub
 		
 		//QUALI PARAMETRI SCELGO DI USARE?
-		String nome = param.getNome();
-		String cognome = param.getCognome();
-		String corso = param.getCorso();
-		Criteria nomeCriteria = null;
-		Criteria cognomeCriteria = null;
-		Criteria corsoCriteria = null;
-		Criteria searchCriteria = new Criteria();
-		List<Criteria> criterias = new ArrayList<Criteria>();
-		if(nome != null) {
-			nomeCriteria = Criteria.where("nome").regex(".*" + nome + ".*", "i");
-			criterias.add(nomeCriteria);
-		}
-		if(cognome != null) {
-			cognomeCriteria = Criteria.where("cognome").regex(".*" + cognome + ".*", "i");
-			criterias.add(cognomeCriteria);
-		}
-		if(corso != null) {
-			corsoCriteria = Criteria.where("listaCorsi").regex(".*" + corso + ".*", "i");
-			criterias.add(corsoCriteria);
-		}
-		searchCriteria.andOperator(criterias);
+		Criteria searchCriteria = andFilter(param.getNome(), param.getCognome(), param.getCorso());
 		
 		//FACCIO LA RICERCA
 		List<Studente> studenti = null;
@@ -143,13 +119,70 @@ public class StudenteDAOImpl implements StudenteDAO {
 	@Override
 	public StudentePageInformation findStudentiWithPagination(StudentePaginationSearchParam2 pagParam) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		//PRIMA SI APPLICA IL FILTRO...
+		Criteria searchCriteria = orFilter(pagParam.getSottoStringa());
+		
+		//...E POI SI FANNO LA RICERCA E LA PAGINAZIONE
+		List<Studente> studenti = null;
+		StudentePageInformation spi = null;
+		if(searchCriteria != null) {
+			Pageable paginabile = PageRequest.of(pagParam.getNumeroPagina(), pagParam.getNumElemPerPagina());
+			Query query = new Query(searchCriteria).with(paginabile);
+			studenti = mongoTemplate.find(query, Studente.class);
+			Page<Studente> paginaStudente = PageableExecutionUtils.getPage(studenti, paginabile, () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Studente.class));
+			spi = new StudentePageInformation(studenti, paginaStudente.getNumber(), paginaStudente.getTotalPages(), paginaStudente.getTotalElements());
+		}
+		return spi;
 	}
 
 	@Override
 	public StudentePageInformation findStudentiWithPagination(StudentePaginationSearchParam pagParam) {
 		// TODO Auto-generated method stub
-		return null;
+		
+		//PRIMA SI APPLICANO I FILTRI...
+		Criteria searchCriteria = andFilter(pagParam.getNome(), pagParam.getCognome(), pagParam.getCorso());
+		
+		//...E POI SI FANNO LA RICERCA E LA PAGINAZIONE
+		List<Studente> studenti = null;
+		StudentePageInformation spi = null;
+		if(searchCriteria != null) {
+			Pageable paginabile = PageRequest.of(pagParam.getNumeroPagina(), pagParam.getNumElemPerPagina());
+			Query query = new Query(searchCriteria).with(paginabile);
+			studenti = mongoTemplate.find(query, Studente.class);
+			Page<Studente> paginaStudente = PageableExecutionUtils.getPage(studenti, paginabile, () -> mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Studente.class));
+			spi = new StudentePageInformation(studenti, paginaStudente.getNumber(), paginaStudente.getTotalPages(), paginaStudente.getTotalElements());
+		}
+		return spi;
+	}
+	
+	private Criteria orFilter(String sottoStringa) {
+		Criteria searchCriteria = new Criteria();
+		Criteria nomeCriteria = Criteria.where("nome").regex(".*" + sottoStringa + ".*", "i");
+		Criteria cognomeCriteria = Criteria.where("cognome").regex(".*" + sottoStringa + ".*", "i");
+		Criteria corsoCriteria = Criteria.where("listaCorsi").regex(".*" + sottoStringa + ".*", "i");
+		return searchCriteria.orOperator(nomeCriteria, cognomeCriteria, corsoCriteria);
+	}
+	
+	private Criteria andFilter(String nome, String cognome, String corso) {
+		Criteria nomeCriteria = null;
+		Criteria cognomeCriteria = null;
+		Criteria corsoCriteria = null;
+		Criteria searchCriteria = new Criteria();
+		List<Criteria> criterias = new ArrayList<Criteria>();
+		if(nome != null) {
+			nomeCriteria = Criteria.where("nome").regex(".*" + nome + ".*", "i");
+			criterias.add(nomeCriteria);
+		}
+		if(cognome != null) {
+			cognomeCriteria = Criteria.where("cognome").regex(".*" + cognome + ".*", "i");
+			criterias.add(cognomeCriteria);
+		}
+		if(corso != null) {
+			corsoCriteria = Criteria.where("listaCorsi").regex(".*" + corso + ".*", "i");
+			criterias.add(corsoCriteria);
+		}
+		return searchCriteria.andOperator(criterias);
 	}
 
 }

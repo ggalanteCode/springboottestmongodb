@@ -139,7 +139,7 @@ public class StudenteControllerImpl implements StudenteController {
 	}
 
 	@Override
-	@PostMapping("/studentiWithPag/{sottoStringa}")
+	@PostMapping("/studentiWithPag")
 	public ResponseEntity<Object> getStudentiWithPag(@RequestBody StudentePaginationSearchParam2 pagParam) {
 		// TODO Auto-generated method stub
 		try {

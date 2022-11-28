@@ -100,7 +100,7 @@ public class StudenteServiceImpl implements StudenteService {
 		if(studenti.getStudentiInThePage().size() != 0) {
 			return studenti;
 		} else {
-			throw new StudenteEmptyListException("errore: non ci sono studenti nel database!");
+			throw new StudenteEmptyListException("errore: non ci sono studenti nel database alla pagina specificata!");
 		}
 	}
 
@@ -108,14 +108,24 @@ public class StudenteServiceImpl implements StudenteService {
 	@Override
 	public StudentePageInformation getStudentiWithPagination(StudentePaginationSearchParam pagParam) throws StudenteException {
 		// TODO Auto-generated method stub
-		return null;
+		StudentePageInformation studenti = studenteDAO.findStudentiWithPagination(pagParam);
+		if(studenti.getStudentiInThePage().size() != 0) {
+			return studenti;
+		} else {
+			throw new StudenteEmptyListException("errore: non ci sono studenti nel database alla pagina specificata!");
+		}
 	}
 	
 	//PAGINAZIONE 1 FILTRO (OR)
 	@Override
 	public StudentePageInformation getStudentiWithPagination(StudentePaginationSearchParam2 pagParam) throws StudenteException {
 		// TODO Auto-generated method stub
-		return null;
+		StudentePageInformation studenti = studenteDAO.findStudentiWithPagination(pagParam);
+		if(studenti.getStudentiInThePage().size() != 0) {
+			return studenti;
+		} else {
+			throw new StudenteEmptyListException("errore: non ci sono studenti nel database alla pagina specificata!");
+		}
 	}
 
 }
